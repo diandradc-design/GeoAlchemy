@@ -1,7 +1,3 @@
-// ======================
-// IMAGES
-// ======================
-
 const images = {
 
 "Magma":"assets/Magma.png",
@@ -50,11 +46,8 @@ const images = {
 };
 
 
-// ======================
-// START ELEMENTS
-// ======================
 
-const starterElements = [
+let discovered = [
 
 "Magma",
 "Cooling",
@@ -71,22 +64,18 @@ const starterElements = [
 ];
 
 
-let discovered = [...starterElements];
-
-
-
-// ======================
-// RECIPES
-// ======================
 
 const recipes = {
 
 
 "Magma+Cooling":"Igneous Rock",
 
+
 "Igneous Rock+High Silica":"Granite",
 
 "Igneous Rock+Low Silica":"Basalt",
+
+
 
 "Igneous Rock+Weathering & Erosion":"Sediment",
 
@@ -95,7 +84,9 @@ const recipes = {
 "Metamorphic Rock+Weathering & Erosion":"Sediment",
 
 
+
 "Sediment+Litification":"Sedimentary Rock",
+
 
 
 "Sedimentary Rock+Organism":"Limestone",
@@ -105,6 +96,7 @@ const recipes = {
 "Sedimentary Rock+Clay":"Claystone",
 
 
+
 "Igneous Rock+Pressure":"Metamorphic Rock",
 
 "Igneous Rock+High Temperature":"Metamorphic Rock",
@@ -112,6 +104,7 @@ const recipes = {
 "Sedimentary Rock+Pressure":"Metamorphic Rock",
 
 "Sedimentary Rock+High Temperature":"Metamorphic Rock",
+
 
 
 "Limestone+Pressure":"Marble",
@@ -130,19 +123,17 @@ const recipes = {
 
 
 
-// ======================
-// DESCRIPTION
-// ======================
+
 
 const descriptions = {
 
 
 "Igneous Rock":
-"Igneous rocks form when magma or lava cools and solidifies.",
+"Igneous rocks form when magma cools and solidifies.",
 
 
 "Granite":
-"Granite is an intrusive igneous rock formed by slow cooling of silica-rich magma beneath Earth's surface.",
+"Granite is an intrusive igneous rock formed from slow cooling silica-rich magma.",
 
 
 "Basalt":
@@ -150,15 +141,15 @@ const descriptions = {
 
 
 "Sediment":
-"Sediment consists of rock fragments produced by weathering and erosion.",
+"Sediment forms from weathering and erosion of existing rocks.",
 
 
 "Sedimentary Rock":
-"Sedimentary rocks form through lithification involving compaction and cementation.",
+"Sedimentary rocks form through compaction and cementation of sediments.",
 
 
 "Limestone":
-"Limestone forms mainly from carbonate materials produced by marine organisms.",
+"Limestone forms mainly from biological materials such as shells and marine organisms.",
 
 
 "Sandstone":
@@ -166,15 +157,15 @@ const descriptions = {
 
 
 "Claystone":
-"Claystone forms from compacted clay-rich sediments.",
+"Claystone forms from compacted clay sediments.",
 
 
 "Metamorphic Rock":
-"Metamorphic rocks form when existing rocks are altered by high pressure and temperature without melting.",
+"Metamorphic rocks form when existing rocks experience high pressure and temperature without melting.",
 
 
 "Marble":
-"Marble forms when limestone undergoes metamorphism and recrystallization.",
+"Marble forms when limestone undergoes metamorphism.",
 
 
 "Quartzite":
@@ -182,133 +173,32 @@ const descriptions = {
 
 
 "Slate":
-"Slate forms from claystone undergoing metamorphism."
+"Slate forms when claystone undergoes metamorphism."
 
 };
 
 
 
-// ======================
-// ELEMENT COLORS
-// ======================
 
-const elementType = {
-
-
-"Magma":"magma",
-
-"Igneous Rock":"igneous",
-"Granite":"igneous",
-"Basalt":"igneous",
-
-
-"Sediment":"sediment",
-
-"Sedimentary Rock":"sedimentary",
-"Limestone":"sedimentary",
-"Sandstone":"sedimentary",
-"Claystone":"sedimentary",
-
-
-"Metamorphic Rock":"metamorphic",
-"Marble":"metamorphic",
-"Quartzite":"metamorphic",
-"Slate":"metamorphic"
-
-};
-
-
-
-// ======================
-// START GAME
-// ======================
-
-function startGame(){
-
-document.getElementById("menu-screen").style.display="none";
-
-document.getElementById("game-screen").style.display="block";
-
-renderElements();
-
-}
-
-
-
-// ======================
-// ABOUT
-// ======================
-
-function showAbout(){
-
-
-const popup=document.getElementById("discovery-popup");
-
-const content=document.getElementById("popup-content");
-
-
-content.innerHTML=`
-
-<button id="close-popup">✖</button>
-
-<h2>About Geo Alchemy</h2>
-
-<p>
-Geo Alchemy is an educational game that explains the rock cycle through interactive element combinations.
-</p>
-
-`;
-
-
-popup.style.display="flex";
-
-
-document.getElementById("close-popup").onclick=function(){
-
-popup.style.display="none";
-
-};
-
-
-}
-
-
-
-// ======================
-// RESET
-// ======================
-
-function resetGame(){
-
-discovered=[...starterElements];
-
-renderElements();
-
-}
-
-
-
-// ======================
-// DISPLAY ELEMENTS
-// ======================
 
 function renderElements(){
 
 
-const container=document.getElementById("elements");
-
+let container=document.getElementById("elements");
 
 container.innerHTML="";
+
 
 
 discovered.forEach(element=>{
 
 
-const card=document.createElement("div");
+let card=document.createElement("div");
+
+card.className="element-card";
 
 
-card.className="element-card "+(elementType[element] || "");
-
+card.draggable=true;
 
 
 card.innerHTML=`
@@ -321,16 +211,90 @@ card.innerHTML=`
 
 
 
-// UNTUK HP: TAP ELEMENT
+// LAPTOP DRAG
+
+card.addEventListener("dragstart",function(e){
+
+e.dataTransfer.setData(
+"element",
+element
+);
+
+});
+
+
+
+// HP TOUCH DRAG
+
+let touchStart=false;
+
+
+card.addEventListener("touchstart",function(){
+
+touchStart=true;
+
+card.style.opacity="0.5";
+
+});
+
+
+
+card.addEventListener("touchend",function(e){
+
+
+if(touchStart){
+
+
+let target=document.elementFromPoint(
+
+e.changedTouches[0].clientX,
+
+e.changedTouches[0].clientY
+
+);
+
+
+
+if(target && target.closest(".element-card")){
+
+
+let second=
+
+target.closest(".element-card").dataset.name;
+
+
+combine(element,second);
+
+
+}
+
+
+}
+
+
+card.style.opacity="1";
+
+touchStart=false;
+
+
+});
+
+
+
+// klik untuk lihat deskripsi
 
 card.onclick=function(){
 
-selectElement(element);
+showDiscovery(element);
 
 };
 
 
+card.dataset.name=element;
+
+
 container.appendChild(card);
+
 
 
 });
@@ -340,62 +304,77 @@ container.appendChild(card);
 
 
 
-// ======================
-// MOBILE COMBINE
-// ======================
-
-let selectedElement=null;
 
 
 
-function selectElement(element){
+
+let firstElement=null;
+
+
+const combineArea=document.getElementById("combine-area");
 
 
 
-if(selectedElement===null){
+combineArea.addEventListener(
+"dragover",
+function(e){
 
-
-selectedElement=element;
-
-
-document.getElementById("combine-area").innerHTML=
-
-"Selected: "+element;
-
+e.preventDefault();
 
 }
 
+);
+
+
+
+combineArea.addEventListener(
+"drop",
+function(e){
+
+e.preventDefault();
+
+
+let element=e.dataTransfer.getData("element");
+
+
+if(firstElement==null){
+
+firstElement=element;
+
+combineArea.innerHTML=
+"Selected : "+element;
+
+
+}
 
 else{
 
 
-combine(selectedElement,element);
+combine(firstElement,element);
 
 
-selectedElement=null;
+firstElement=null;
 
 
-document.getElementById("combine-area").innerHTML=
-
-"Drop elements here";
-
-
-}
+combineArea.innerHTML=
+"Combine Elements";
 
 
 }
 
 
+});
 
 
-// ======================
-// COMBINE
-// ======================
+
+
+
+
 
 function combine(a,b){
 
 
-const result=
+let result=
 
 recipes[a+"+"+b] ||
 
@@ -406,12 +385,10 @@ recipes[b+"+"+a];
 if(result){
 
 
-
 if(!discovered.includes(result)){
 
 
 discovered.push(result);
-
 
 renderElements();
 
@@ -430,18 +407,16 @@ showDiscovery(result);
 
 
 
-// ======================
-// POPUP
-// ======================
+
+
+
 
 function showDiscovery(element){
 
 
+let popup=document.getElementById("discovery-popup");
 
-const popup=document.getElementById("discovery-popup");
-
-
-const content=document.getElementById("popup-content");
+let content=document.getElementById("popup-content");
 
 
 
@@ -449,15 +424,12 @@ content.innerHTML=`
 
 <button id="close-popup">✖</button>
 
-
 <h2>✨ ${element}</h2>
-
 
 <img src="${images[element]}">
 
-
 <p>
-${descriptions[element] || "A geological discovery."}
+${descriptions[element] || ""}
 </p>
 
 `;
@@ -476,3 +448,44 @@ popup.style.display="none";
 
 
 }
+
+
+
+
+
+
+
+function resetGame(){
+
+
+discovered=[
+
+"Magma",
+"Cooling",
+"High Silica",
+"Low Silica",
+"Weathering & Erosion",
+"Litification",
+"Organism",
+"Sand",
+"Clay",
+"Pressure",
+"High Temperature"
+
+];
+
+
+renderElements();
+
+
+}
+
+
+
+
+
+window.onload=function(){
+
+renderElements();
+
+};
